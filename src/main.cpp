@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ESP32Servo.h>
 // put function declarations here:
-int myFunction(int, int);
+int servoHesap(int, int, int);
 Servo parmak;
 void setup() {
   // put your setup code here, to run once:
@@ -19,6 +19,8 @@ void loop() {
 }
 
 // put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+int servoHesap(int pin, int altDeger, int ustDeger) {
+  int rawDeger = constrain(analogRead(pin), altDeger, ustDeger);
+  int deger = map(rawDeger, 0, 4096, 1000, 2000);
+  return constrain(deger, 1000, 2000);
 }
