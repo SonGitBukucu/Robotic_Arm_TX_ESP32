@@ -13,7 +13,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   int rawdeger = (constrain(analogRead(34), 0, 4096));
   int deger = constrain(map(rawdeger, 0, 3300, 1000, 2000), 1000, 2000);
-  Serial.println(deger);
+  //Serial.println(deger);
   parmak.writeMicroseconds(deger);
 
 }
