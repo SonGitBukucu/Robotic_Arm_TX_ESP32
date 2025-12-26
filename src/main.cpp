@@ -93,8 +93,8 @@ void AngleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   
   // Math: 1500 (center) + (radians * (500 / (PI/2)))
   // 500 / 1.5707 = 318.3
-  out.pitch = (1500 + pitchRad * 318.3);
-  out.roll = (1500 + rollRad * 318.3);
+  out.pitch = 1500 + (pitchRad * 318.3);
+  out.roll = 1500 + (rollRad * 318.3);
 
   if (abs(gyro.gyroZ) > 0.8) {
     out.yaw += (gyro.gyroZ * 5.55) * dt;
