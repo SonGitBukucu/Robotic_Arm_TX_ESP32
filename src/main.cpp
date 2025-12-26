@@ -27,7 +27,7 @@ float yawF = 0;
 unsigned long lastMicros;
 
 int servoHesap(int, int, int);
-void AngleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float);
+void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float);
 Servo parmak;
 
 void setup() {
@@ -35,15 +35,16 @@ void setup() {
   Wire.setClock(400000);
   Serial.begin(115200);
 
-  // Init Sensors
-  IMU_F.init(calF, ADDR_FOREARM);
-  IMU_H.init(calH, ADDR_HAND);
 
   // Calibration (Keep sensors still!)
   Serial.println("Calibrating... DO NOT MOVE.");
   delay(2000);
   IMU_F.calibrateAccelGyro(&calF);
   IMU_H.calibrateAccelGyro(&calH);
+
+  // Init Sensors
+  IMU_F.init(calF, ADDR_FOREARM);
+  IMU_H.init(calH, ADDR_HAND);
 
   lastMicros = micros();
   Serial.println("System Ready!");
@@ -53,11 +54,11 @@ void setup() {
 void loop() {
   // 1. Get Time Delta
   unsigned long currentMicros = micros();
-  float dt = (currentMicros - lastMicros) / 1000000.0;
+  float deltaT = (currentMicros - lastMicros) / 1000000.0;
   lastMicros = currentMicros;
 
-  AngleCalc(IMU_F, accF, gyroF, anglesF, dt);
-  AngleCalc(IMU_H, accH, gyroH, anglesH, dt);
+  angleCalc(IMU_F, accF, gyroF, anglesF, deltaT);
+  angleCalc(IMU_H, accH, gyroH, anglesH, deltaT);
 
   /* 5. Output for the Plotter
   Serial.print("Pitch:"); Serial.print(pitchF);
@@ -67,14 +68,14 @@ void loop() {
   Serial.print("Yaw:");   Serial.println(yawF);
   */
 
-  //delay(10);
+
 
   int rawdeger = (analogRead(34));
   int deger = constrain(map(rawdeger, 2720, 4095, 1000, 2000), 1000, 2000);
-    Serial.println(anglesF.pitch);
+    Serial.println(anglesF.yaw);
   //Serial.println(deger);
   //parmak.writeMicroseconds(deger);
-
+  delay(10);
 }
 
 int servoHesap(int pin, int altDeger, int ustDeger) {
@@ -83,7 +84,7 @@ int servoHesap(int pin, int altDeger, int ustDeger) {
   return constrain(deger, 1000, 2000);
 }
 
-void AngleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float dt) {
+void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float dt) {
   imu.update();
   imu.getAccel(&acc);
   imu.getGyro(&gyro);
@@ -93,10 +94,10 @@ void AngleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   
   // Math: 1500 (center) + (radians * (500 / (PI/2)))
   // 500 / 1.5707 = 318.3
-  out.pitch = 1500 + (pitchRad * 318.3);
-  out.roll = 1500 + (rollRad * 318.3);
+  out.pitch = (1500 + pitchRad * 318.3);
+  out.roll = (1500 + rollRad * 318.3);
 
   if (abs(gyro.gyroZ) > 0.8) {
-    out.yaw += (gyro.gyroZ * 5.55) * dt;
+    out.yaw += (gyro.gyroZ) * dt;
   }
 }
