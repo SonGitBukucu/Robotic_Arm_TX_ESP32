@@ -72,7 +72,7 @@ void loop() {
 
   int rawdeger = (analogRead(34));
   int deger = constrain(map(rawdeger, 2720, 4095, 1000, 2000), 1000, 2000);
-    Serial.println(anglesF.yaw);
+    Serial.println(anglesF.roll);
   //Serial.println(deger);
   //parmak.writeMicroseconds(deger);
   delay(10);
@@ -94,8 +94,8 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   
   // Math: 1500 (center) + (radians * (500 / (PI/2)))
   // 500 / 1.5707 = 318.3
-  out.pitch = (1500 + pitchRad * 318.3);
-  out.roll = (1500 + rollRad * 318.3);
+  out.pitch = 1700 + (pitchRad * 636.6);
+  out.roll = 1550 + (rollRad * 636.6);
 
   if (abs(gyro.gyroZ) > 0.8) {
     out.yaw += (gyro.gyroZ) * dt;
