@@ -27,6 +27,7 @@ float yawF = 0;
 unsigned long lastMicros;
 
 int servoHesap(int, int, int);
+void AngleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float);
 Servo parmak;
 
 void setup() {
@@ -76,7 +77,6 @@ void loop() {
 
 }
 
-// put function definitions here:
 int servoHesap(int pin, int altDeger, int ustDeger) {
   int rawDeger = analogRead(pin);
   int deger = map(rawDeger, altDeger, ustDeger, 1000, 2000);
@@ -88,10 +88,15 @@ void AngleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   imu.getAccel(&acc);
   imu.getGyro(&gyro);
 
-  out.pitch = atan2(acc.accelX, sqrt(acc.accelY * acc.accelY + acc.accelZ * acc.accelZ)) * 180.0 / PI;
-  out.roll  = atan2(acc.accelY, acc.accelZ) * 180.0 / PI;
+ float pitchRad = atan2(acc.accelX, sqrt(acc.accelY * acc.accelY + acc.accelZ * acc.accelZ)) * 180.0 / PI;
+ float rollRad = atan2(acc.accelY, acc.accelZ) * 180.0 / PI;
+  
+  // Math: 1500 (center) + (radians * (500 / (PI/2)))
+  // 500 / 1.5707 = 318.3
+  out.pitch = 1500 + (pitchRad * 318.3);
+  out.roll = 1500 + (rollRad * 318.3);
 
   if (abs(gyro.gyroZ) > 0.8) {
-    out.yaw += gyro.gyroZ * dt;
+    out.yaw += (gyro.gyroZ * 5.55) * dt;
   }
 }
