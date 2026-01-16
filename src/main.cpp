@@ -56,7 +56,7 @@ int servoHesap(int, int, int);
 void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float);
 Servo parmak;
 
-short kanal[11];
+short kanal[8];
 
 const byte nrf24kod[5] = {'r','o','b','o','t'}; 
 RF24 radio(NRF24CE, NRF24CSN);
@@ -112,17 +112,13 @@ void loop() {
   int deger = constrain(map(rawdeger, 2720, 4095, 1000, 2000), 1000, 2000);
     Serial.println(anglesF.roll);
   
-  kanal[0] = servoHesap(basParmak, basParmakAlt, basParmakUst);
-  kanal[1] = servoHesap(isaretParmak, isaretParmakAlt, isaretParmakUst);
-  kanal[2] = servoHesap(ortaParmak, ortaParmakAlt, ortaParmakUst);
-  kanal[3] = servoHesap(yuzukParmak, yuzukParmakAlt, yuzukParmakUst);
-  kanal[4] = servoHesap(serceParmak, serceParmakAlt, serceParmakUst);
-  kanal[5] = anglesF.pitch;
-  kanal[6] = anglesF.roll;
-  kanal[7] = anglesF.yaw;
-  kanal[8] = anglesH.pitch;
-  kanal[9] = anglesH.roll;
-  kanal[10] = anglesH.yaw;
+
+  
+  kanal[3] = servoHesap(basParmak, basParmakAlt, basParmakUst);
+  kanal[4] = servoHesap(isaretParmak, isaretParmakAlt, isaretParmakUst);
+  kanal[5] = servoHesap(ortaParmak, ortaParmakAlt, ortaParmakUst);
+  kanal[6] = servoHesap(yuzukParmak, yuzukParmakAlt, yuzukParmakUst);
+  kanal[7] = servoHesap(serceParmak, serceParmakAlt, serceParmakUst);
   
   //Serial.println(deger);
   //parmak.writeMicroseconds(deger);
