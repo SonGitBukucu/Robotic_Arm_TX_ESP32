@@ -113,7 +113,9 @@ void loop() {
     Serial.println(anglesF.roll);
   
 
-  
+  kanal[0] = anglesF.roll;
+  kanal[1] = anglesF.yaw;
+  kanal[2] = anglesH.roll;
   kanal[3] = servoHesap(basParmak, basParmakAlt, basParmakUst);
   kanal[4] = servoHesap(isaretParmak, isaretParmakAlt, isaretParmakUst);
   kanal[5] = servoHesap(ortaParmak, ortaParmakAlt, ortaParmakUst);
