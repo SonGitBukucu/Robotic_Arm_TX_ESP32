@@ -12,25 +12,25 @@
 #define NRF24CE   4
 #define NRF24CSN  5 //PLACEHOLDER
 
-#define basParmak     34
-#define basParmakUst
-#define basParmakAlt
+#define basParmak       36
+#define basParmakUst    4096
+#define basParmakAlt    0
 
-#define isaretParmak  
-#define isaretParmakUst
-#define isaretParmakAlt
+#define isaretParmak    39
+#define isaretParmakUst 4096
+#define isaretParmakAlt 0
 
-#define ortaParmak    
-#define ortaParmakUst
-#define ortaParmakAlt
+#define ortaParmak      34
+#define ortaParmakUst   4096 //ÜST VE ALT DEĞERLER ÖLÇÜLMEDİĞİ İÇİN ŞİMDİLİK BÖYLE
+#define ortaParmakAlt   0
 
-#define yuzukParmak   
-#define yuzukParmakUst
-#define yuzukParmakAlt
+#define yuzukParmak     35
+#define yuzukParmakUst  4096
+#define yuzukParmakAlt  0
 
-#define serceParmak   
-#define serceParmakUst
-#define serceParmakAlt
+#define serceParmak     32
+#define serceParmakUst  4096
+#define serceParmakAlt  0
 
 MPU6500 IMU_F;
 MPU6500 IMU_H;
@@ -56,7 +56,7 @@ int servoHesap(int, int, int);
 void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float);
 Servo parmak;
 
-short kanal[5];
+short kanal[11];
 
 const byte nrf24kod[5] = {'r','o','b','o','t'}; 
 RF24 radio(NRF24CE, NRF24CSN);
@@ -111,6 +111,19 @@ void loop() {
   int rawdeger = (analogRead(34));
   int deger = constrain(map(rawdeger, 2720, 4095, 1000, 2000), 1000, 2000);
     Serial.println(anglesF.roll);
+  
+  kanal[0] = servoHesap(basParmak, basParmakAlt, basParmakUst);
+  kanal[1] = servoHesap(isaretParmak, isaretParmakAlt, isaretParmakUst);
+  kanal[2] = servoHesap(ortaParmak, ortaParmakAlt, ortaParmakUst);
+  kanal[3] = servoHesap(yuzukParmak, yuzukParmakAlt, yuzukParmakUst);
+  kanal[4] = servoHesap(serceParmak, serceParmakAlt, serceParmakUst);
+  kanal[5] = anglesF.pitch;
+  kanal[6] = anglesF.roll;
+  kanal[7] = anglesF.yaw;
+  kanal[8] = anglesH.pitch;
+  kanal[9] = anglesH.roll;
+  kanal[10] = anglesH.yaw;
+  
   //Serial.println(deger);
   //parmak.writeMicroseconds(deger);
   delay(10);
