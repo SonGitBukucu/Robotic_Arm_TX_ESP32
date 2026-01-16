@@ -126,7 +126,7 @@ void loop() {
   
   //Serial.println(deger);
   //parmak.writeMicroseconds(deger);
-  delay(10);
+  //delay(10);
 }
 
 int servoHesap(int pin, int altDeger, int ustDeger) {
