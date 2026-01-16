@@ -2,9 +2,15 @@
 #include <ESP32Servo.h>
 #include <Wire.h>
 #include "FastIMU.h"
+#include <SPI.h>
+#include <RF24.h>
+#include <nRF24L01.h>
 
 #define ADDR_FOREARM 0x68
 #define ADDR_HAND    0x69
+
+#define NRF24CE   4
+#define NRF24CSN  5 //PLACEHOLDER
 
 #define basParmak     34
 #define basParmakUst
@@ -52,6 +58,9 @@ Servo parmak;
 
 short kanal[5];
 
+const byte nrf24kod[5] = {'r','o','b','o','t'}; 
+RF24 radio(NRF24CE, NRF24CSN);
+
 void setup() {
   Wire.begin();
   Wire.setClock(400000);
@@ -71,6 +80,13 @@ void setup() {
   lastMicros = micros();
   Serial.println("System Ready!");
   parmak.attach(26);
+
+  radio.begin();
+  radio.openWritingPipe(nrf24kod);
+  radio.setChannel(76);
+  radio.setDataRate(RF24_250KBPS);
+  radio.setPALevel(RF24_PA_MAX); // güç çıkışı şu an yüksek durumda, mesafeyi azaltmak için ...(RF24_PA_LOW/MIN) yapılmalı.
+  radio.stopListening();
 }
 
 void loop() {
