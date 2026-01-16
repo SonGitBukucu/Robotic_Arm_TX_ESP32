@@ -6,6 +6,26 @@
 #define ADDR_FOREARM 0x68
 #define ADDR_HAND    0x69
 
+#define basParmak     34
+#define basParmakUst
+#define basParmakAlt
+
+#define isaretParmak  
+#define isaretParmakUst
+#define isaretParmakAlt
+
+#define ortaParmak    
+#define ortaParmakUst
+#define ortaParmakAlt
+
+#define yuzukParmak   
+#define yuzukParmakUst
+#define yuzukParmakAlt
+
+#define serceParmak   
+#define serceParmakUst
+#define serceParmakAlt
+
 MPU6500 IMU_F;
 MPU6500 IMU_H;
 
@@ -29,6 +49,8 @@ unsigned long lastMicros;
 int servoHesap(int, int, int);
 void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float);
 Servo parmak;
+
+short kanal[5];
 
 void setup() {
   Wire.begin();
