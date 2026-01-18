@@ -1,3 +1,5 @@
+//KÜTÜPHANE DEĞİŞİKLİĞİ YAPILACAK. KODUN KÖKTEN DEĞİŞİMİ MUHTEMEL
+
 #include <Arduino.h>
 #include <ESP32Servo.h>
 #include <Wire.h>
