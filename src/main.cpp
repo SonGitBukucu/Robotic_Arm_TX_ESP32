@@ -66,16 +66,15 @@ void setup() {
   Wire.setClock(400000);
   Serial.begin(115200);
 
+    // Init Sensors
+  IMU_F.init(calF, ADDR_FOREARM);
+  IMU_H.init(calH, ADDR_HAND);
 
   // Calibration (Keep sensors still!)
   Serial.println("Calibrating... DO NOT MOVE.");
   delay(2000);
   IMU_F.calibrateAccelGyro(&calF);
   IMU_H.calibrateAccelGyro(&calH);
-
-  // Init Sensors
-  IMU_F.init(calF, ADDR_FOREARM);
-  IMU_H.init(calH, ADDR_HAND);
 
   lastMicros = micros();
   Serial.println("System Ready!");
@@ -108,9 +107,9 @@ void loop() {
 
 
 
-  int rawdeger = (analogRead(34));
+  int rawdeger = (analogRead(36));
   int deger = constrain(map(rawdeger, 2720, 4095, 1000, 2000), 1000, 2000);
-    Serial.println(anglesF.roll);
+    
   
 
   kanal[0] = anglesF.roll;
@@ -121,10 +120,11 @@ void loop() {
   kanal[5] = servoHesap(ortaParmak, ortaParmakAlt, ortaParmakUst);
   kanal[6] = servoHesap(yuzukParmak, yuzukParmakAlt, yuzukParmakUst);
   kanal[7] = servoHesap(serceParmak, serceParmakAlt, serceParmakUst);
+  radio.write(&kanal,sizeof(kanal));
   
-  //Serial.println(deger);
+  Serial.println(kanal[0]);
   //parmak.writeMicroseconds(deger);
-  //delay(10);
+  delay(10);
 }
 
 int servoHesap(int pin, int altDeger, int ustDeger) {
@@ -143,8 +143,8 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   
   // Math: 1500 (center) + (radians * (500 / (PI/2)))
   // 500 / 1.5707 = 318.3
-  out.pitch = 1700 + (pitchRad * 636.6);
-  out.roll = 1550 + (rollRad * 636.6);
+  out.pitch = 1500 + (pitchRad * 636.6); //1700
+  out.roll = 1500 + (rollRad * 636.6);  //1550
 
   if (abs(gyro.gyroZ) > 0.8) {
     out.yaw += (gyro.gyroZ) * dt;
