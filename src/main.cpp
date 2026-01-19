@@ -6,8 +6,8 @@
 #include <SPI.h>
 //ALT VE ÜST DEĞERLER TEKER TEKER ÖLÇÜLMELİ
 #define basParmak         36
-#define basParmakAlt      0
-#define basParmakUst      4096
+#define basParmakAlt      1200
+#define basParmakUst      1800
 
 #define isaretParmak      39
 #define isaretParmakAlt   0
@@ -130,16 +130,16 @@ void loop() {
     sonVeri = millis();
     if (failsafeDurum) {
       failsafeDurum = false;
-      digitalWrite(DEBUG_LED, LOW);
+      digitalWrite(DEBUG_LED, HIGH);
     }
     ilkVeriGitti = true;
   }
   if (ilkVeriGitti && !iletisim && millis() - sonVeri >= failsafeAralik && !failsafeDurum) {
     failsafeDurum = true;
-    digitalWrite(DEBUG_LED, HIGH);
+    digitalWrite(DEBUG_LED, LOW);
     }
 
-  Serial.println(anglesF.pitchPWM);
+  Serial.println(kanal[3]);
  //Serial.println(deger);
  //parmak.writeMicroseconds(deger);
   delay(10);
@@ -147,7 +147,7 @@ void loop() {
 
 int parmakHesap(int pin, int altDeger, int ustDeger) {
   int rawDeger = analogRead(pin);
-  int deger = map(rawDeger, altDeger, ustDeger, 1000, 2000);
+  short deger = map(rawDeger, altDeger, ustDeger, 1000, 2000);
   return constrain(deger, 1000, 2000);
 }
 
