@@ -6,8 +6,8 @@
 #include <SPI.h>
 //ALT VE ÜST DEĞERLER TEKER TEKER ÖLÇÜLMELİ
 #define basParmak         36
-#define basParmakAlt      1200
-#define basParmakUst      1800
+#define basParmakAlt      550
+#define basParmakUst      4095
 
 #define isaretParmak      39
 #define isaretParmakAlt   0
@@ -72,7 +72,7 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
 void setup() {
   Wire.begin();
   Wire.setClock(400000);
-  Serial.begin(115200);
+  //Serial.begin(115200);
 
   pinMode(basParmak, INPUT);
   pinMode(isaretParmak, INPUT);
@@ -82,14 +82,14 @@ void setup() {
   pinMode(DEBUG_LED, OUTPUT);
 
   radio.begin();
-  radio.openReadingPipe(1,nrf24kod);
+  radio.openWritingPipe(nrf24kod);
   radio.setChannel(76);
   radio.setDataRate(RF24_250KBPS);
   radio.setPALevel(RF24_PA_MAX); // güç çıkışı yüksekten düşüğe: MAX | HIGH | LOW | MIN
   radio.stopListening();
 
   // Calibration (Keep sensors still!)
-  Serial.println("Calibrating... DO NOT MOVE.");
+  //Serial.println("Calibrating... DO NOT MOVE.");
   delay(2000);
   
   IMU_F.init(calF, ADDR_FOREARM);
@@ -103,7 +103,7 @@ void setup() {
   IMU_H.init(calH, ADDR_HAND);
 
   lastMicros = micros();
-  Serial.println("System Ready!");
+  //Serial.println("System Ready!");
 }
 
 void loop() {
@@ -139,10 +139,10 @@ void loop() {
     digitalWrite(DEBUG_LED, LOW);
     }
 
-  Serial.println(kanal[3]);
- //Serial.println(deger);
+  //Serial.println(kanal[3]);
+  //Serial.println(analogRead(basParmak));
  //parmak.writeMicroseconds(deger);
-  delay(10);
+  //delay(10);
 }
 
 int parmakHesap(int pin, int altDeger, int ustDeger) {
