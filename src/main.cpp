@@ -140,7 +140,7 @@ void loop() {
     digitalWrite(DEBUG_LED, LOW);
     }
 
-  //Serial.println(kanal[3]);
+  //Serial.println(anglesF.pitch);
   //Serial.println(analogRead(basParmak));
  //parmak.writeMicroseconds(deger);
   //delay(10);
@@ -157,19 +157,31 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   imu.getAccel(&acc);
   imu.getGyro(&gyro);
 
+  // 1. Calculate Angles from Accelerometer (Gravity)
   float pitchRad = atan2(acc.accelX, sqrt(acc.accelY * acc.accelY + acc.accelZ * acc.accelZ));
   float rollRad = atan2(acc.accelY, acc.accelZ);
   
-  // Math: 1500 (center) + (radians * (500 / (PI/2)))
-  // 500 / 1.5707 = 318.3
-  out.pitch = constrain(1500 + (pitchRad * (500 / (PI / 2))), 1000, 2000);
-  out.roll = constrain(1500 + (rollRad * (500 / (PI / 2))), 1000, 2000);
+  // 2. Map to 544-2400 range
+  // Center is 1472. The max swing from center is 928.
+  // 928 / (PI/2) = 590.78
+  out.pitch = 1472 + (pitchRad * (928.0 / (PI / 2.0)));
+  out.roll = 1472 + (rollRad * (928.0 / (PI / 2.0)));
 
+  // 3. Constrain to your new physical limits
+  out.pitch = constrain(out.pitch, 544, 2400);
+  out.roll = constrain(out.roll, 544, 2400);
+
+  // 4. Calculate Yaw (Integrated from Gyro)
   if (abs(gyro.gyroZ) > 0.8) {
-   out.yaw += (gyro.gyroZ) * dt;
+    out.yaw += (gyro.gyroZ) * dt;
   }
 
-  out.pitchPWM = short(out.pitch);
-  out.rollPWM = short(out.roll);
-  out.yawPWM = constrain((out.yaw + 90) * (1000 / 180) + 1050, 1000, 2000);
+  // 5. Convert to PWM Output
+  out.pitchPWM = (short)out.pitch;
+  out.rollPWM = (short)out.roll;
+
+  // For Yaw: Assuming out.yaw is degrees. 
+  // To map -90 to +90 degrees into 544 to 2400:
+  // (yaw + 90) * (TotalSpan / TotalDegrees) + Offset
+  out.yawPWM = constrain((out.yaw + 90.0) * (1856.0 / 180.0) + 544, 544, 2400);
 }
