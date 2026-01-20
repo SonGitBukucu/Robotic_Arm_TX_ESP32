@@ -115,9 +115,9 @@ void loop() {
   angleCalc(IMU_F, accF, gyroF, anglesF, deltaT);
   angleCalc(IMU_H, accH, gyroH, anglesH, deltaT);
 
-  kanal[0] = anglesF.pitch;
-  kanal[1] = anglesF.yaw;
-  kanal[2] = anglesH.pitch;
+  kanal[0] = anglesF.pitchPWM;
+  kanal[1] = anglesF.yawPWM;
+  kanal[2] = anglesH.pitchPWM;
   kanal[3] = parmakHesap(basParmak, basParmakAlt, basParmakUst); 
   kanal[4] = parmakHesap(isaretParmak, isaretParmakAlt, isaretParmakUst);
   kanal[5] = parmakHesap(ortaParmak, ortaParmakAlt, ortaParmakUst);
