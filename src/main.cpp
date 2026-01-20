@@ -58,7 +58,7 @@ unsigned long lastMicros;
 
 unsigned long sonVeri = 0;
 unsigned int failsafeAralik = 700; // fail-safe devreye girmesi için gereken süre.
-bool failsafeDurum = false;
+bool iletisimVar = false;
 
 short kanal[8];
 
@@ -128,14 +128,15 @@ void loop() {
 
   if (iletisim) {
     sonVeri = millis();
-    if (failsafeDurum) {
-      failsafeDurum = false;
+    if (!iletisimVar) {
+      iletisimVar = true;
+      ilkVeriGitti = true;
       digitalWrite(DEBUG_LED, HIGH);
     }
-    ilkVeriGitti = true;
+    
   }
-  if (ilkVeriGitti && !iletisim && millis() - sonVeri >= failsafeAralik && !failsafeDurum) {
-    failsafeDurum = true;
+  if (ilkVeriGitti && !iletisim && millis() - sonVeri >= failsafeAralik && iletisimVar) {
+    iletisimVar = false;
     digitalWrite(DEBUG_LED, LOW);
     }
 
