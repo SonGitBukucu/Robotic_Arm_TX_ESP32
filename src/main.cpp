@@ -1,3 +1,5 @@
+// MUSTAFA ALPER KAYA
+
 #include <Arduino.h>
 #include <Wire.h>
 #include "FastIMU.h"
@@ -30,7 +32,7 @@
 
 #define NRF24_CE          4
 #define NRF24_CSN         5
-#define DEBUG_LED         16 //PLACEHOLDER
+#define DEBUG_LED         16
 
 MPU6500 IMU_F;
 MPU6500 IMU_H;
