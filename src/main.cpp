@@ -50,8 +50,8 @@ struct AngleData {
   short yawPWM;
 };
 
-AngleData anglesF = {0,0,0};
-AngleData anglesH = {0,0,0};
+AngleData anglesF = {};
+AngleData anglesH = {};
 
 // Variables for Angle Tracking
 float yawH = 0;
