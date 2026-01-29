@@ -1,4 +1,17 @@
 // MUSTAFA ALPER KAYA
+// NRF24L01+ modüllerini kullanan robot kol projesinin "eldiven" (verici) kodu.
+
+/*#####################################################         KANAL SIRALAMASI         #####################################################
+  Keyfinize göre açın, kapatın, değiştirin.
+  1 = Pan
+  2 = Tilt
+  3 = Bilek
+  4 = Baş Parmak
+  5 = İşaret Parmak
+  6 = Orta Parmak
+  7 = Yüzük Parmak
+  8 = Serçe Parmak
+######################         DOĞRU ÇALIŞMASI İÇİN LÜTFEN HEM VERİCİDE HEM DE ALICIDA AYNI SIRALAMAYI YAPIN         #######################*/
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -6,6 +19,8 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 #include <SPI.h>
+
+//######################################                PARMAKLAR                ######################################
 //ALT VE ÜST DEĞERLER TEKER TEKER ÖLÇÜLMELİ
 #define basParmak         36
 #define basParmakAlt      550
@@ -26,13 +41,27 @@
 #define serceParmak       32
 #define serceParmakAlt    0
 #define serceParmakUst    4096
+//######################################                PARMAKLAR                ######################################
 
-#define ADDR_FOREARM  0x68
-#define ADDR_HAND     0x69
-
+//######################################                NRF24                ######################################
 #define NRF24_CE          4
 #define NRF24_CSN         5
 #define DEBUG_LED         16
+
+unsigned long sonVeri = 0;
+unsigned int failsafeAralik = 700; // fail-safe devreye girmesi için gereken süre.
+bool iletisimVar = false;
+
+short kanal[8];
+
+const byte nrf24kod[5] = {'r','o','b','o','t'}; 
+RF24 radio(NRF24_CE, NRF24_CSN);
+bool ilkVeriGitti = false;
+//######################################                NRF24                ######################################
+
+//######################################                GYRO & ACCEL                ######################################
+#define ADDR_FOREARM  0x68
+#define ADDR_HAND     0x69
 
 MPU6500 IMU_F;
 MPU6500 IMU_H;
@@ -53,23 +82,18 @@ struct AngleData {
 AngleData anglesF = {};
 AngleData anglesH = {};
 
-// Variables for Angle Tracking
+// Yaw için ekstra değişkenler
 float yawH = 0;
 float yawF = 0; 
 unsigned long lastMicros;
+//######################################                GYRO & ACCEL                ######################################
 
-unsigned long sonVeri = 0;
-unsigned int failsafeAralik = 700; // fail-safe devreye girmesi için gereken süre.
-bool iletisimVar = false;
+//######################################                FONKSİYON BİLDİRİMLERİ                ######################################
+int parmakHesap(int, int, int); //Flex sensöründen gelen veriden servo için hareket değerine dönüştüren fonksiyon.
+void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float);  //Bir gyro-accel modülünden gelen veriler doğrultusunda 3 eksende açı hesaplaması yapan fonksiyon.
+//######################################                FONKSİYON BİLDİRİMLERİ                ######################################
 
-short kanal[8];
-
-const byte nrf24kod[5] = {'r','o','b','o','t'}; 
-RF24 radio(NRF24_CE, NRF24_CSN);
-bool ilkVeriGitti = false;
-
-int parmakHesap(int, int, int);
-void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, float);
+//######################################                FONKSİYON TANIMLARI               ######################################
 
 void setup() {
   Wire.begin();
@@ -187,3 +211,5 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   // (yaw + 90) * (TotalSpan / TotalDegrees) + Offset
   out.yawPWM = constrain((out.yaw + 90.0) * (1856.0 / 180.0) + 544, 544, 2400);
 }
+
+//######################################                FONKSİYON TANIMLARI               ######################################
