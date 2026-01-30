@@ -15,7 +15,7 @@
 
 /* #########################        YAPILACAKLAR       #########################
   %0 Flex sensörlerin alt ve üst değerlerini belirleme
-  %0 Final PWM değerlerini merkez (2000-544)/2 = 1472 yerine merkezi 1500 olacak şekilde mapleme
+  TEST Final PWM değerlerini merkez (2000-544)/2 = 1472 yerine merkezi 1500 olacak şekilde mapleme
    #########################        YAPILACAKLAR       ######################### */
 
 #include <Arduino.h>
@@ -91,6 +91,11 @@ AngleData anglesH = {};
 float yawH = 0;
 float yawF = 0; 
 unsigned long lastMicros;
+
+const float pwmMerkez = 1500.0;
+const float pwmMin    = 600.0;
+const float pwmMax    = 2400.0;
+const float pwmRange = 900;
 //######################################                GYRO & ACCEL                ######################################
 
 //######################################                FONKSİYON BİLDİRİMLERİ                ######################################
@@ -192,10 +197,9 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   float pitchRad = atan2(acc.accelX, sqrt(acc.accelY * acc.accelY + acc.accelZ * acc.accelZ));
   float rollRad = atan2(acc.accelY, acc.accelZ);
   
-  // 544-2000 map
-  // 928 / (PI/2) = 590.78
-  out.pitch = 1472 + (pitchRad * (928.0 / (PI / 2.0)));
-  out.roll = 1472 + (rollRad * (928.0 / (PI / 2.0)));
+  // 600-2000 map
+  out.pitch = pwmMerkez + (pitchRad / (PI / 2.0)) * pwmRange;
+  out.roll  = pwmMerkez + (rollRad  / (PI / 2.0)) * pwmRange;
 
   // Constrain
   out.pitch = constrain(out.pitch, 544, 2400);
@@ -210,8 +214,9 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   out.pitchPWM = (short)out.pitch;
   out.rollPWM = (short)out.roll;
 
-  // 544-2000 map
-  out.yawPWM = constrain((out.yaw + 90.0) * (1856.0 / 180.0) + 544, 544, 2400);
+  // 600-2000 map
+  out.yawPWM = pwmMerkez + (out.yaw / 90.0) * pwmRange;
+  out.yawPWM = constrain(out.yawPWM, 544, 2400);
 }
 
 //######################################                FONKSİYON TANIMLARI               ######################################
