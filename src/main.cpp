@@ -202,8 +202,8 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   out.roll  = pwmMerkez + (rollRad  / (PI / 2.0)) * pwmRange;
 
   // Constrain
-  out.pitch = constrain(out.pitch, 544, 2400);
-  out.roll = constrain(out.roll, 544, 2400);
+  out.pitch = constrain(out.pitch, pwmMin, pwmMax);
+  out.roll = constrain(out.roll, pwmMin, pwmMax);
 
   // Yaw hesapla
   if (abs(gyro.gyroZ) > 0.8) {
@@ -216,7 +216,7 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
 
   // 600-2000 map
   out.yawPWM = pwmMerkez + (out.yaw / 90.0) * pwmRange;
-  out.yawPWM = constrain(out.yawPWM, 544, 2400);
+  out.yawPWM = constrain(out.yawPWM, pwmMin, pwmMax);
 }
 
 //######################################                FONKSİYON TANIMLARI               ######################################
