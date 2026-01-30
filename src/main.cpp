@@ -13,6 +13,11 @@
   8 = Serçe Parmak
 ######################         DOĞRU ÇALIŞMASI İÇİN LÜTFEN HEM VERİCİDE HEM DE ALICIDA AYNI SIRALAMAYI YAPIN         #######################*/
 
+/* #########################        YAPILACAKLAR       #########################
+  %0 Flex sensörlerin alt ve üst değerlerini belirleme
+  %0 Final PWM değerlerini merkez (2000-544)/2 = 1472 yerine merkezi 1500 olacak şekilde mapleme
+   #########################        YAPILACAKLAR       ######################### */
+
 #include <Arduino.h>
 #include <Wire.h>
 #include "FastIMU.h"
@@ -133,7 +138,7 @@ void setup() {
 }
 
 void loop() {
-  // 1. Get Time Delta
+  // Delta Zaman
   unsigned long currentMicros = micros();
   float deltaT = (currentMicros - lastMicros) / 1000000.0;
   lastMicros = currentMicros;
@@ -183,32 +188,29 @@ void angleCalc(MPU6500 &imu, AccelData &acc, GyroData &gyro, AngleData &out, flo
   imu.getAccel(&acc);
   imu.getGyro(&gyro);
 
-  // 1. Calculate Angles from Accelerometer (Gravity)
+  // İvmeölçerden açı al
   float pitchRad = atan2(acc.accelX, sqrt(acc.accelY * acc.accelY + acc.accelZ * acc.accelZ));
   float rollRad = atan2(acc.accelY, acc.accelZ);
   
-  // 2. Map to 544-2400 range
-  // Center is 1472. The max swing from center is 928.
+  // 544-2000 map
   // 928 / (PI/2) = 590.78
   out.pitch = 1472 + (pitchRad * (928.0 / (PI / 2.0)));
   out.roll = 1472 + (rollRad * (928.0 / (PI / 2.0)));
 
-  // 3. Constrain to your new physical limits
+  // Constrain
   out.pitch = constrain(out.pitch, 544, 2400);
   out.roll = constrain(out.roll, 544, 2400);
 
-  // 4. Calculate Yaw (Integrated from Gyro)
+  // Yaw hesapla
   if (abs(gyro.gyroZ) > 0.8) {
     out.yaw += (gyro.gyroZ) * dt;
   }
 
-  // 5. Convert to PWM Output
+  // PWM'e çevir
   out.pitchPWM = (short)out.pitch;
   out.rollPWM = (short)out.roll;
 
-  // For Yaw: Assuming out.yaw is degrees. 
-  // To map -90 to +90 degrees into 544 to 2400:
-  // (yaw + 90) * (TotalSpan / TotalDegrees) + Offset
+  // 544-2000 map
   out.yawPWM = constrain((out.yaw + 90.0) * (1856.0 / 180.0) + 544, 544, 2400);
 }
 
