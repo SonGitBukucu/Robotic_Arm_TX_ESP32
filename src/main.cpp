@@ -15,7 +15,6 @@
 
 /* #########################        YAPILACAKLAR       #########################
   %0 Flex sensörlerin alt ve üst değerlerini belirleme
-  TEST Final PWM değerlerini merkez (2000-544)/2 = 1472 yerine merkezi 1500 olacak şekilde mapleme
    #########################        YAPILACAKLAR       ######################### */
 
 #include <Arduino.h>
@@ -124,8 +123,8 @@ void setup() {
   radio.setPALevel(RF24_PA_MAX); // güç çıkışı yüksekten düşüğe: MAX | HIGH | LOW | MIN
   radio.stopListening();
 
-  // Calibration (Keep sensors still!)
-  //Serial.println("Calibrating... DO NOT MOVE.");
+  // Kalibrasyon
+  //Serial.println("Kalibrasyon. HAREKET ETME");
   delay(2000);
   
   IMU_F.init(calF, ADDR_FOREARM);
@@ -139,7 +138,7 @@ void setup() {
   IMU_H.init(calH, ADDR_HAND);
 
   lastMicros = micros();
-  //Serial.println("System Ready!");
+  //Serial.println("Sistem Hazır");
 }
 
 void loop() {
