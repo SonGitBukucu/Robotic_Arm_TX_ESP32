@@ -176,6 +176,7 @@ void loop() {
     }
 
   //Serial.println(anglesF.pitch);
+  //digitalWrite(DEBUG_LED, HIGH);
   //Serial.println(analogRead(basParmak));
  //parmak.writeMicroseconds(deger);
   //delay(10);
